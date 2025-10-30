@@ -1,0 +1,31 @@
+<launch>
+  <!-- spawn four drones around origin at altitude 10 -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find swarm_simulation)/urdf/simple_drone.urdf" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone0"
+        args="-urdf -param robot_description -model drone0 -x 3 -y 0 -z 10" />
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone1"
+        args="-urdf -param robot_description -model drone1 -x -3 -y 0 -z 10" />
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone2"
+        args="-urdf -param robot_description -model drone2 -x 0 -y 3 -z 10" />
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone3"
+        args="-urdf -param robot_description -model drone3 -x 0 -y -3 -z 10" />
+
+  <!-- start detection and swarm manager nodes -->
+  <node pkg="swarm_simulation" type="detection_node.py" name="detection_node" output="screen"/>
+  <node pkg="swarm_simulation" type="swarm_manager.py" name="swarm_manager" output="screen"/>
+
+  <!-- spawn controllers for drones (start formation controllers separately if needed) -->
+  <node pkg="swarm_simulation" type="formation_controller.py" name="formation_controller0" output="screen">
+    <param name="drone_id" value="0" />
+  </node>
+  <node pkg="swarm_simulation" type="formation_controller.py" name="formation_controller1" output="screen">
+    <param name="drone_id" value="1" />
+  </node>
+  <node pkg="swarm_simulation" type="formation_controller.py" name="formation_controller2" output="screen">
+    <param name="drone_id" value="2" />
+  </node>
+  <node pkg="swarm_simulation" type="formation_controller.py" name="formation_controller3" output="screen">
+    <param name="drone_id" value="3" />
+  </node>
+</launch>

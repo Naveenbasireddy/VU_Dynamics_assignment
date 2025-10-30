@@ -1,0 +1,9 @@
+num_drones: 4
+formation_radius: 4.0
+safe_distance: 1.2
+max_speed: 1.5
+control_gain: 1.0
+repulsive_gain: 1.0
+target_topic: /target_pose
+takeoff_alt: 10.0
+hit_threshold: 0.7
