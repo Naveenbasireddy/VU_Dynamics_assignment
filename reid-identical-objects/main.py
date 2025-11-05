@@ -3,14 +3,13 @@ import numpy as np
 from tracker import SimpleTracker
 import os
 
-
 OUT_DIR = "outputs"
 os.makedirs(OUT_DIR, exist_ok=True)
 VIDEO_PATH = os.path.join(OUT_DIR, "demo_output.mp4")
 
 WIDTH, HEIGHT = 640, 360
 FPS = 20
-DURATION = 10  
+DURATION = 10
 FRAME_COUNT = DURATION * FPS
 
 
@@ -35,11 +34,11 @@ def generate_positions(frame_idx):
 
 def draw_object(frame, center, obj_id_hint=None):
     if center is None or center[0] is None or center[1] is None:
-        return  
+        return
     x, y = center
     w, h = 40, 25
-    cv2.rectangle(frame, (x - w//2, y - h//2), (x + w//2, y + h//2), (200, 200, 200), -1)
-    cv2.rectangle(frame, (x - w//2, y - h//2), (x + w//2, y + h//2), (60, 60, 60), 2)
+    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (200, 200, 200), -1)
+    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (60, 60, 60), 2)
     if obj_id_hint is not None:
         cv2.putText(frame, f"H{obj_id_hint}", (x - 20, y - 20),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 50, 50), 1)
@@ -58,7 +57,6 @@ def main():
         draw_object(frame, posA, obj_id_hint="A")
         draw_object(frame, posB, obj_id_hint="B")
 
-        
         detections = []
         if posA[0] is not None:
             x, y = posA
@@ -67,10 +65,8 @@ def main():
             x, y = posB
             detections.append(((x - 20, y - 12, 40, 25), None))
 
-        
         tracked = tracker.update([d[0] for d in detections], frame_id=i)
 
-        
         for tr in tracked:
             tid, bbox = tr['id'], tr['bbox']
             x, y, w, h = bbox

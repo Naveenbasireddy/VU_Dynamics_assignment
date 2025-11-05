@@ -1,5 +1,4 @@
-# controller.py
-# Simple UAV controller on ground plane: compute velocity vector toward target with speed limit.
+
 import math
 
 class UAVController:

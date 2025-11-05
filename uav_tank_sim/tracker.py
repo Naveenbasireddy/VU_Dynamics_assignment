@@ -1,5 +1,3 @@
-# tracker.py
-# Simple centroid tracker with a Kalman-like smoothing for centroid positions.
 import numpy as np
 from filterpy.kalman import KalmanFilter
 from scipy.spatial import distance
@@ -10,7 +8,6 @@ class Track:
         self.id = tid
         self.kf = KalmanFilter(dim_x=4, dim_z=2)
         dt = 1.0
-        # state: x, y, vx, vy
         self.kf.F = np.array([[1,0,dt,0],
                               [0,1,0,dt],
                               [0,0,1,0],
@@ -48,10 +45,7 @@ class KalmanCentroidTracker:
         self.log = []
 
     def update(self, detections):
-        """
-        detections: list of bbox tuples (x,y,w,h) OR [].
-        returns list of track dicts: [{'id': id, 'centroid': (x,y)}]
-        """
+     
         centroids = []
         for d in detections:
             if d is None:
@@ -59,7 +53,6 @@ class KalmanCentroidTracker:
             x,y,w,h = d
             centroids.append((x + w/2.0, y + h/2.0))
 
-        # Predict existing
         preds = []
         for tr in self.tracks:
             pred = tr.predict()
@@ -67,30 +60,25 @@ class KalmanCentroidTracker:
 
         assigned = {}
         if len(preds) == 0 and len(centroids) > 0:
-            # create tracks for all detections
             for c in centroids:
                 tr = Track(self.next_id, c)
                 self.tracks.append(tr)
                 self.log.append(("init", tr.id))
                 self.next_id += 1
         elif len(preds) > 0 and len(centroids) > 0:
-            # cost matrix
             cost = np.zeros((len(preds), len(centroids)))
             for i,p in enumerate(preds):
                 for j,c in enumerate(centroids):
                     cost[i,j] = distance.euclidean(p, c)
-            # greedy assignment
             for _ in range(min(cost.shape)):
                 i,j = np.unravel_index(cost.argmin(), cost.shape)
                 if cost[i,j] > self.dist_thresh:
                     break
-                # assign
                 self.tracks[i].update(centroids[j])
                 assigned[i] = j
                 cost[i,:] = 1e6
                 cost[:,j] = 1e6
 
-            # unmatched detections -> spawn new tracks
             matched_dets = set(assigned.values())
             for idx, c in enumerate(centroids):
                 if idx not in matched_dets:
@@ -99,16 +87,13 @@ class KalmanCentroidTracker:
                     self.log.append(("spawn", tr.id))
                     self.next_id += 1
 
-            # unmatched tracks -> mark missing
             for i,tr in enumerate(self.tracks):
                 if i not in assigned:
                     tr.missing += 1
         else:
-            # no detections -> mark all missing
             for tr in self.tracks:
                 tr.missing += 1
 
-        # remove dead tracks
         alive = []
         for tr in self.tracks:
             if tr.missing <= self.max_age:
@@ -117,7 +102,6 @@ class KalmanCentroidTracker:
                 self.log.append(("del", tr.id))
         self.tracks = alive
 
-        # prepare return
         out = []
         for tr in self.tracks:
             pos = tr.get_state()
