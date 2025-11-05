@@ -1,0 +1,27 @@
+<launch>
+  <arg name="num_drones" default="3" />
+  <arg name="world" default="$(find swarm_sim)/worlds/swarm_world.world" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+  </include>
+
+  <include file="$(find swarm_sim)/launch/spawn_drones.launch">
+    <arg name="num_drones" value="$(arg num_drones)"/>
+  </include>
+
+  <node pkg="swarm_sim" type="takeoff_manager.py" name="takeoff_manager" output="screen"/>
+  <node pkg="swarm_sim" type="detector_node.py" name="detector" output="screen"/>
+  <node pkg="swarm_sim" type="tracker_node.py" name="tracker" output="screen"/>
+  <node pkg="swarm_sim" type="coordinator_node.py" name="coordinator" output="screen"/>
+
+  <node pkg="swarm_sim" type="controller_node.py" name="controller_0" output="screen">
+    <param name="drone_id" value="0"/>
+  </node>
+  <node pkg="swarm_sim" type="controller_node.py" name="controller_1" output="screen">
+    <param name="drone_id" value="1"/>
+  </node>
+  <node pkg="swarm_sim" type="controller_node.py" name="controller_2" output="screen">
+    <param name="drone_id" value="2"/>
+  </node>
+</launch>

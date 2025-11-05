@@ -1,0 +1,11 @@
+<launch>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_target"
+        args="-file $(find swarm_sim)/models/target_model/model.sdf -sdf -model target -x 5 -y 0 -z 0"/>
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone_0"
+        args="-file $(find swarm_sim)/models/drone_model/model.sdf -sdf -model drone_0 -x 0 -y 0 -z 0"/>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone_1"
+        args="-file $(find swarm_sim)/models/drone_model/model.sdf -sdf -model drone_1 -x 2 -y -2 -z 0"/>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_drone_2"
+        args="-file $(find swarm_sim)/models/drone_model/model.sdf -sdf -model drone_2 -x -2 -y -2 -z 0"/>
+</launch>
